@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerScript : MonoBehaviour {
 
@@ -11,7 +12,8 @@ public class PlayerScript : MonoBehaviour {
 
 	public bool canJump;
 	public int blockCount = 0;
-	public ArrayList  map = new ArrayList();
+
+	public Dictionary<point3D,GameObject>  map = new Dictionary<point3D,GameObject>();
 
 	private Vector3 lastFocusBlock;
 
@@ -83,26 +85,41 @@ public class PlayerScript : MonoBehaviour {
 			//count the number of blocks on screen for naming
 			blockCount++;
 			//keep track of block coordinates
-			map.Add(new point3D((int)focusBlock.x,(int)focusBlock.y, (int)focusBlock.z )); //TODO: pushing the wrong values
-			Debug.Log(map[blockCount-1].ToString());
+			point3D point = new point3D((int)focusBlock.x,(int)focusBlock.y, (int)focusBlock.z);
+			map.Add(point, cube); //TODO: pushing the wrong values
+			//Debug.Log(map[blockCount-1].ToString());
 
+		}
+		if (Input.GetKey (KeyCode.Mouse1)) {
+			GameObject.Destroy(map[new point3D((int)focusBlock.x,(int)focusBlock.y,(int)focusBlock.z)]);
 		}
 		if (Input.GetKey (KeyCode.Space) && canJump) {
 			GetComponent <Rigidbody>().AddForce(Vector3.up * 250f);
 			canJump = false;
 		}
-	
-	Ray ray = this.cam.ViewportPointToRay (new Vector3 (0.5f, 0.5f, 0));
+		Ray ray = this.cam.ViewportPointToRay (new Vector3 (0.5f, 0.5f, 0));
 		RaycastHit[] hits = Physics.RaycastAll (ray, 5);
 		if (hits.Length > 0) {
 
 			//normalize point
-			focusBlock = hits[hits.Length-1].point;
-			focusBlock.x = Mathf.Round(focusBlock.x);
-			focusBlock.y = Mathf.Floor((focusBlock.y+1));
-			focusBlock.z = Mathf.Round(focusBlock.z);
-
+			focusBlock = hits [hits.Length - 1].point;
+			focusBlock.x = Mathf.Round (focusBlock.x);
+			focusBlock.y = Mathf.Floor ((focusBlock.y + 1));
+			focusBlock.z = Mathf.Round (focusBlock.z);
 			cube.transform.position = focusBlock;
+		} else {
+			ray = this.cam.ViewportPointToRay (new Vector3 (0.7f, 0.5f, 0));
+			hits = Physics.RaycastAll (ray, 5);
+			if (hits.Length > 0) {
+				
+				//normalize point
+				focusBlock = hits [hits.Length - 1].point;
+				focusBlock.x = Mathf.Round (focusBlock.x);
+				focusBlock.y = Mathf.Floor ((focusBlock.y + 1));
+				focusBlock.z = Mathf.Round (focusBlock.z);
+				
+				cube.transform.position = focusBlock;
+			}
 		}
 	}
 

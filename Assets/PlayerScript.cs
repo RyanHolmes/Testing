@@ -8,7 +8,7 @@ public class PlayerScript : MonoBehaviour {
 	public GameObject g;
 	public GameObject cube;
 	public Vector3 focusBlock;
-	public float speed = 0.05f;
+	public float speed = 0.1f;
 
 	public bool canJump;
 	public int blockCount = 0;

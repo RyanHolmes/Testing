@@ -61,15 +61,19 @@ public class PlayerScript : MonoBehaviour {
 		forward.y = 0; // this should be changed to being relative to the ground. later.
 		if (Input.GetKey (KeyCode.W)) {
 			this.transform.position = this.transform.position + forward * speed;
-		} else if (Input.GetKey (KeyCode.S)) {
+		}
+		if (Input.GetKey (KeyCode.S)) {
 			this.transform.position = this.transform.position - forward *speed;
-		} else if (Input.GetKey (KeyCode.D)) {
+		}
+		if (Input.GetKey (KeyCode.D)) {
 			//transform.Rotate (Vector3.up * Time.deltaTime * 100);
 			this.transform.Translate(Vector3.right * 0.1f);
-		} else if (Input.GetKey (KeyCode.A)) {
+		}
+		if (Input.GetKey (KeyCode.A)) {
 			//transform.Rotate (Vector3.down * Time.deltaTime * 100);
 			this.transform.Translate(Vector3.left * 0.1f);
-		} else if (Input.GetKey (KeyCode.Mouse0) && focusBlock != lastFocusBlock) {
+		}
+		if (Input.GetKey (KeyCode.Mouse0) && focusBlock != lastFocusBlock) {
 			//ideally check if other cubes exist/check map, but for now. make sure to only make one cube/ click
 			lastFocusBlock = focusBlock;
 			cube.layer = LayerMask.NameToLayer("default");
@@ -82,17 +86,18 @@ public class PlayerScript : MonoBehaviour {
 			map.Add(new point3D((int)focusBlock.x,(int)focusBlock.y, (int)focusBlock.z )); //TODO: pushing the wrong values
 			Debug.Log(map[blockCount-1].ToString());
 
-		} else if (Input.GetKey (KeyCode.Space) && canJump) {
+		}
+		if (Input.GetKey (KeyCode.Space) && canJump) {
 			GetComponent <Rigidbody>().AddForce(Vector3.up * 250f);
 			canJump = false;
 		}
 	
 	Ray ray = this.cam.ViewportPointToRay (new Vector3 (0.5f, 0.5f, 0));
-		RaycastHit[] hits = Physics.RaycastAll (ray, 500);
+		RaycastHit[] hits = Physics.RaycastAll (ray, 5);
 		if (hits.Length > 0) {
 
 			//normalize point
-			focusBlock = hits[0].point;
+			focusBlock = hits[hits.Length-1].point;
 			focusBlock.x = Mathf.Round(focusBlock.x);
 			focusBlock.y = Mathf.Floor((focusBlock.y+1));
 			focusBlock.z = Mathf.Round(focusBlock.z);

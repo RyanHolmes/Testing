@@ -9,6 +9,8 @@ public class PlayerScript : MonoBehaviour {
 	public GameObject cube;
 	public Vector3 focusBlock;
 	public float speed = 0.1f;
+	public GameObject bullet;
+	public int bulletCount;
 
 	public bool canJump;
 	public int blockCount = 0;
@@ -36,6 +38,7 @@ public class PlayerScript : MonoBehaviour {
 	void Start () {
 		cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		canJump = true;
+		bulletCount = 0;
 	}
 	
 	// Update is called once per frame
@@ -75,51 +78,67 @@ public class PlayerScript : MonoBehaviour {
 			//transform.Rotate (Vector3.down * Time.deltaTime * 100);
 			this.transform.Translate(Vector3.left * 0.1f);
 		}
-		if (Input.GetKey (KeyCode.Mouse0) && focusBlock != lastFocusBlock) {
-			//ideally check if other cubes exist/check map, but for now. make sure to only make one cube/ click
-			lastFocusBlock = focusBlock;
-			cube.layer = LayerMask.NameToLayer("default");
-			cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			cube.name = "block" + blockCount; //doesn't work - should be named based on placement
-			cube.layer = LayerMask.NameToLayer("Ignore Raycast");
-			//count the number of blocks on screen for naming
-			blockCount++;
-			//keep track of block coordinates
-			point3D point = new point3D((int)focusBlock.x,(int)focusBlock.y, (int)focusBlock.z);
-			map.Add(point, cube); //TODO: pushing the wrong values
-			//Debug.Log(map[blockCount-1].ToString());
-
-		}
-		if (Input.GetKey (KeyCode.Mouse1)) {
-			GameObject.Destroy(map[new point3D((int)focusBlock.x,(int)focusBlock.y,(int)focusBlock.z)]);
-		}
+//		if (Input.GetKey (KeyCode.Mouse0) && focusBlock != lastFocusBlock) {
+//			//ideally check if other cubes exist/check map, but for now. make sure to only make one cube/ click
+//			lastFocusBlock = focusBlock;
+//			cube.layer = LayerMask.NameToLayer("default");
+//			cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+//			cube.name = "block" + blockCount; //doesn't work - should be named based on placement
+//			cube.layer = LayerMask.NameToLayer("Ignore Raycast");
+//			//count the number of blocks on screen for naming
+//			blockCount++;
+//			//keep track of block coordinates
+//			point3D point = new point3D((int)focusBlock.x,(int)focusBlock.y, (int)focusBlock.z);
+//			map.Add(point, cube); //TODO: pushing the wrong values
+//			//Debug.Log(map[blockCount-1].ToString());
+//
+//		}
+//		if (Input.GetKey (KeyCode.Mouse1)) {
+//			GameObject.Destroy(map[new point3D((int)focusBlock.x,(int)focusBlock.y,(int)focusBlock.z)]);
+//		}
 		if (Input.GetKey (KeyCode.Space) && canJump) {
 			GetComponent <Rigidbody>().AddForce(Vector3.up * 250f);
 			canJump = false;
 		}
-		Ray ray = this.cam.ViewportPointToRay (new Vector3 (0.5f, 0.5f, 0));
-		RaycastHit[] hits = Physics.RaycastAll (ray, 5);
-		if (hits.Length > 0) {
+//		Ray ray = this.cam.ViewportPointToRay (new Vector3 (0.5f, 0.5f, 0));
+//		RaycastHit[] hits = Physics.RaycastAll (ray, 5);
+//		if (hits.Length > 0) {
+//
+//			//normalize point
+//			focusBlock = hits [hits.Length - 1].point;
+//			focusBlock.x = Mathf.Round (focusBlock.x);
+//			focusBlock.y = Mathf.Floor ((focusBlock.y + 1));
+//			focusBlock.z = Mathf.Round (focusBlock.z);
+//			cube.transform.position = focusBlock;
+//		} else {
+//			ray = this.cam.ViewportPointToRay (new Vector3 (0.7f, 0.5f, 0));
+//			hits = Physics.RaycastAll (ray, 5);
+//			if (hits.Length > 0) {
+//				
+//				//normalize point
+//				focusBlock = hits [hits.Length - 1].point;
+//				focusBlock.x = Mathf.Round (focusBlock.x);
+//				focusBlock.y = Mathf.Floor ((focusBlock.y + 1));
+//				focusBlock.z = Mathf.Round (focusBlock.z);
+//				
+//				cube.transform.position = focusBlock;
+//			}
+//		}
 
-			//normalize point
-			focusBlock = hits [hits.Length - 1].point;
-			focusBlock.x = Mathf.Round (focusBlock.x);
-			focusBlock.y = Mathf.Floor ((focusBlock.y + 1));
-			focusBlock.z = Mathf.Round (focusBlock.z);
-			cube.transform.position = focusBlock;
-		} else {
-			ray = this.cam.ViewportPointToRay (new Vector3 (0.7f, 0.5f, 0));
-			hits = Physics.RaycastAll (ray, 5);
-			if (hits.Length > 0) {
-				
-				//normalize point
-				focusBlock = hits [hits.Length - 1].point;
-				focusBlock.x = Mathf.Round (focusBlock.x);
-				focusBlock.y = Mathf.Floor ((focusBlock.y + 1));
-				focusBlock.z = Mathf.Round (focusBlock.z);
-				
-				cube.transform.position = focusBlock;
-			}
+		//RYANTODO: shooting
+		if(Input.GetKey (KeyCode.Mouse0)){
+			Vector3 aim = new Vector3(GameObject.Find("marker_front").transform.position.x - GameObject.Find("marker_back").transform.position.x, 
+			                          GameObject.Find("marker_front").transform.position.y - GameObject.Find("marker_back").transform.position.y,
+			                          GameObject.Find("marker_front").transform.position.z - GameObject.Find("marker_back").transform.position.z);
+			GameObject b = (GameObject)Instantiate(bullet, new Vector3(GameObject.Find("marker_front").transform.position.x, GameObject.Find("marker_front").transform.position.y, GameObject.Find("marker_front").transform.position.z), Quaternion.identity);
+			b.name = "bullet" + bulletCount;
+			b.SendMessage("setAim", aim);
+			b.SendMessage("setId", bulletCount);
+			bulletCount++;
+		}
+		//RYANTODO: aim down the sights
+		if(Input.GetKey (KeyCode.Q)){
+
 		}
 	}
 

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: f26994720ba4f7640b465eb637037bbd
-timeCreated: 1431031391
+timeCreated: 1431471296
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
@@ -8,6 +8,7 @@ MonoImporter:
   - cam: {instanceID: 0}
   - g: {instanceID: 0}
   - cube: {fileID: 137186, guid: 6cc68770d39f9794293e750fb904d3a0, type: 2}
+  - bullet: {fileID: 181222, guid: 66f3aa668378e4705a2f0d19937a0215, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

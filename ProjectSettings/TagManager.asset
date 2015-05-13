@@ -6,6 +6,10 @@ TagManager:
   tags:
   - floor
   - main
+  - gun_basic
+  - marker_front
+  - marker_back
+  - bullet_basic
   layers:
   - Default
   - TransparentFX

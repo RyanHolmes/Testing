@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: f26994720ba4f7640b465eb637037bbd
-timeCreated: 1431477185
+timeCreated: 1431642549
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
@@ -8,7 +8,11 @@ MonoImporter:
   - cam: {instanceID: 0}
   - g: {instanceID: 0}
   - cube: {fileID: 137186, guid: 6cc68770d39f9794293e750fb904d3a0, type: 2}
-  - bullet: {fileID: 181222, guid: 66f3aa668378e4705a2f0d19937a0215, type: 2}
+  - bullet_circle: {fileID: 181222, guid: 66f3aa668378e4705a2f0d19937a0215, type: 2}
+  - bullet_square: {instanceID: 0}
+  - menu_default: {fileID: 2800000, guid: ea3bb7e33e6ba43c09d6179ae44c3137, type: 3}
+  - menu_guns: {fileID: 2800000, guid: 330fd4f20e795417d9a674aebe6749af, type: 3}
+  - menu_blocks: {fileID: 2800000, guid: 4eadef782ce114c539ff680c6970e08c, type: 3}
   - crosshairTexture: {fileID: 2800000, guid: a74652b265560409586a2e9a528a3ea0, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}

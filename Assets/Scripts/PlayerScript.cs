@@ -4,64 +4,77 @@ using System.Collections.Generic;
 
 public class PlayerScript : MonoBehaviour {
 
+	//Game Objects
 	public Camera cam;
 	public GameObject g;
 	public GameObject cube;
-	public Vector3 focusBlock;
-	public float speed = 0.1f;
-	public GameObject bullet;
-	public int bulletCount;
-	public bool canPress = true;
-	public bool canDraw = true;
+	public GameObject bullet_circle;
+	public GameObject bullet_square;
 
-	public bool canJump;
+	//menu Game Objects
+	public GameObject menu_default;
+	public GameObject menu_guns;
+	public GameObject menu_blocks;
+
+	//Vectors
+	public Vector3 focusBlock;
+	private Vector3 lastFocusBlock;
+	public float speed = 0.1f;
+
+	//counters
+	public int bulletCount;
 	public int blockCount = 0;
 
+	//Block storage?
 	public Dictionary<point3D,GameObject>  map = new Dictionary<point3D,GameObject>();
 
-	private Vector3 lastFocusBlock;
-
+	//Mouse Crap
 	public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
 	public RotationAxes axes = RotationAxes.MouseXAndY;
 	public float sensitivityX = 10F;
 	public float sensitivityY = 10F;
-	
 	public float minimumX = -360F;
 	public float maximumX = 360F;
-	
 	public float minimumY = -60F;
 	public float maximumY = 60F;
-	
 	float rotationY = 0F;
-
-
-	public Texture2D crosshairTexture;
-	public float crosshairScale = 1;
-
 	
+	//pngs
+	public Texture2D crosshairTexture;
+
+	//booleans
+	public bool canPress = true; //disables walking ability
+	public bool canDrawCH = true; //enables crosshair drawing
+	public bool canDrawMenu = false; //Enables menu drawing
+	public bool canJump = true; //Enables player jump movement when they rreturn to ground
+	public bool canShoot = true; //disable shooting when in menu mode
+	public bool leftShift = false;
+
 	
 	// Use this for initialization
 	void Start () {
 		cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		canJump = true;
 		bulletCount = 0;
-		Cursor.visible = false;
+		Cursor.visible = false; //no curser bitch!
+		canDrawMenu = false;
+		canShoot = true;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		Cursor.visible = false;
 		//mouse stuff
-		if (axes == RotationAxes.MouseX) {
+		if (axes == RotationAxes.MouseX && canPress) {
 			cam.transform.Rotate (0, Input.GetAxis ("Mouse X") * sensitivityX, 0);
-		} else if (axes == RotationAxes.MouseXAndY) {
+		} else if (axes == RotationAxes.MouseXAndY && canPress) {
 			float rotationX = transform.localEulerAngles.y + Input.GetAxis ("Mouse X") * sensitivityX;
 
 			rotationY += Input.GetAxis ("Mouse Y") * sensitivityY;
 			rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
 
 			transform.localEulerAngles = new Vector3 (-rotationY, rotationX, 0);
-		} else {
+		} else if (canPress) {
 			rotationY += Input.GetAxis ("Mouse Y") * sensitivityY;
 			rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
 
@@ -132,11 +145,11 @@ public class PlayerScript : MonoBehaviour {
 //			}
 //		}
 		//FIRES GUN 
-		if (Input.GetKey (KeyCode.Mouse0)) {
+		if (Input.GetKey (KeyCode.Mouse0) && canShoot) {
 			Vector3 aim = new Vector3 (GameObject.Find ("marker_front").transform.position.x - GameObject.Find ("marker_back").transform.position.x, 
 			                          GameObject.Find ("marker_front").transform.position.y - GameObject.Find ("marker_back").transform.position.y,
 			                          GameObject.Find ("marker_front").transform.position.z - GameObject.Find ("marker_back").transform.position.z);
-			GameObject b = (GameObject)Instantiate (bullet, new Vector3 (GameObject.Find ("marker_front").transform.position.x, GameObject.Find ("marker_front").transform.position.y, GameObject.Find ("marker_front").transform.position.z), Quaternion.identity);
+			GameObject b = (GameObject)Instantiate (bullet_circle, new Vector3 (GameObject.Find ("marker_front").transform.position.x, GameObject.Find ("marker_front").transform.position.y, GameObject.Find ("marker_front").transform.position.z), Quaternion.identity);
 			b.name = "bullet" + bulletCount;
 			b.SendMessage ("setAim", aim);
 			b.SendMessage ("setId", bulletCount);
@@ -150,13 +163,13 @@ public class PlayerScript : MonoBehaviour {
 			//change cams rotation and position 
 			cam.transform.rotation = Quaternion.LookRotation (a);
 			cam.transform.position = new Vector3(GameObject.Find("marker_back").transform.position.x,GameObject.Find("marker_back").transform.position.y + 0.5f,GameObject.Find("marker_back").transform.position.z);
-			canDraw = false;
+			canDrawCH = false;
 			//cam.transform.position.y = GameObject.Find("marker_back").transform.position.y + 0.25f;
 		} else {
 			//return to old view
 			cam.transform.rotation = Quaternion.LookRotation (this.transform.forward);
 			cam.transform.position = this.transform.position;
-			canDraw = true;
+			canDrawCH = true;
 		}
 	
 
@@ -164,6 +177,8 @@ public class PlayerScript : MonoBehaviour {
 		//RYANTODO: weapon toggle gui
 		if (Input.GetKey (KeyCode.Q)) {
 			canPress = false;
+			canShoot = false;
+			canDrawMenu = true;
 			//instantiate weapons menu
 
 			if (Input.GetKey (KeyCode.W)) {
@@ -172,11 +187,15 @@ public class PlayerScript : MonoBehaviour {
 				//
 			} else if (Input.GetKey (KeyCode.A)) {
 				//
-			} else if (Input.GetKey (KeyCode.D)) {
-				//
+			} else if (Input.GetKeyDown (KeyCode.D)) {
+				leftShift = true;
+				canDrawMenu = false;
 			}
 		} else {
 			canPress = true;
+			canShoot = true;
+			canDrawMenu = false;
+			leftShift = false;
 		}
 	}
 
@@ -190,10 +209,11 @@ public class PlayerScript : MonoBehaviour {
 		//if not paused
 		if(Time.timeScale != 0)
 		{
-			if(crosshairTexture!=null && canDraw)
-				GUI.DrawTexture(new Rect((Screen.width-crosshairTexture.width*crosshairScale)/2 ,(Screen.height-crosshairTexture.height*crosshairScale)/2, crosshairTexture.width*crosshairScale, crosshairTexture.height*crosshairScale),crosshairTexture);
+			if(crosshairTexture!=null && canDrawCH)
+				GUI.DrawTexture(new Rect((Screen.width-crosshairTexture.width*1)/2 ,(Screen.height-crosshairTexture.height*1)/2, crosshairTexture.width*1, crosshairTexture.height*1),crosshairTexture);
 			else
 				Debug.Log("No crosshair texture set in the Inspector");
-		}
+			}
 	}
+
 }

@@ -45,7 +45,7 @@ public class PlayerScript : MonoBehaviour {
 	//booleans
 	public bool canPress = true; //disables walking ability
 	public bool canDrawCH = true; //enables crosshair drawing
-	public bool canDrawMenu = false; //Enables menu drawing
+	public bool canDrawMenu = true; //Enables menu drawing
 	public bool canJump = true; //Enables player jump movement when they rreturn to ground
 	public bool canShoot = true; //disable shooting when in menu mode
 	public bool leftShift = false;
@@ -57,8 +57,14 @@ public class PlayerScript : MonoBehaviour {
 		canJump = true;
 		bulletCount = 0;
 		Cursor.visible = false; //no curser bitch!
-		canDrawMenu = false;
+		canDrawMenu = true;
 		canShoot = true;
+		GameObject d = (GameObject) Instantiate(menu_default, new Vector3(-10,-10,-10), cam.transform.rotation);
+		GameObject g = (GameObject) Instantiate(menu_guns, new Vector3(-10,-10,-10), cam.transform.rotation);
+		GameObject b = (GameObject) Instantiate(menu_blocks, new Vector3(-10,-10,-10), cam.transform.rotation);
+		d.name = "menu_default";
+		g.name = "menu_guns";
+		b.name = "menu_blocks";
 	}
 	
 	// Update is called once per frame
@@ -178,9 +184,22 @@ public class PlayerScript : MonoBehaviour {
 		if (Input.GetKey (KeyCode.Q)) {
 			canPress = false;
 			canShoot = false;
-			canDrawMenu = true;
-			//instantiate weapons menu
+			Vector3 distCheck = this.transform.position - GameObject.Find ("menu_default").transform.position;
 
+			if(canDrawMenu){
+				//instantiate weapons menu
+				GameObject.Find ("menu_default").transform.position = cam.transform.position + cam.transform.forward;
+				GameObject.Find ("menu_default").transform.rotation = cam.transform.rotation;
+				GameObject.Find ("menu_guns").transform.position = cam.transform.position + cam.transform.forward + cam.transform.right * 0.25f + cam.transform.up * 0.125f;
+				GameObject.Find ("menu_guns").transform.rotation = cam.transform.rotation;
+				GameObject.Find ("menu_blocks").transform.position = cam.transform.position + cam.transform.forward + cam.transform.right * 0.5f + cam.transform.up * 0.125f;
+				GameObject.Find ("menu_blocks").transform.rotation = cam.transform.rotation;
+				GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = false;
+			}
+
+			if(distCheck.magnitude < 5){
+				canDrawMenu = false;
+			}
 			if (Input.GetKey (KeyCode.W)) {
 				//select up menu item
 			} else if (Input.GetKey (KeyCode.S)) {
@@ -189,12 +208,15 @@ public class PlayerScript : MonoBehaviour {
 				//
 			} else if (Input.GetKeyDown (KeyCode.D)) {
 				leftShift = true;
-				canDrawMenu = false;
 			}
 		} else {
+			GameObject.Find ("menu_default").transform.position = new Vector3(-10,-10,-10);
+			GameObject.Find ("menu_guns").transform.position = new Vector3(-10,-10,-10);
+			GameObject.Find ("menu_blocks").transform.position = new Vector3(-10,-10,-10);
+			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = true;
 			canPress = true;
 			canShoot = true;
-			canDrawMenu = false;
+			canDrawMenu = true;
 			leftShift = false;
 		}
 	}
@@ -202,18 +224,16 @@ public class PlayerScript : MonoBehaviour {
 	void OnCollisionEnter(Collision c){
 		if(c.gameObject.tag == "floor"){
 			canJump = true;
+
 		}
 	}
 
 	void OnGUI(){
 		//if not paused
-		if(Time.timeScale != 0)
-		{
-			if(crosshairTexture!=null && canDrawCH)
-				GUI.DrawTexture(new Rect((Screen.width-crosshairTexture.width*1)/2 ,(Screen.height-crosshairTexture.height*1)/2, crosshairTexture.width*1, crosshairTexture.height*1),crosshairTexture);
-			else
-				Debug.Log("No crosshair texture set in the Inspector");
+		if (Time.timeScale != 0) {
+			if (crosshairTexture != null && canDrawCH)
+				GUI.DrawTexture (new Rect ((Screen.width - crosshairTexture.width * 1) / 2, (Screen.height - crosshairTexture.height * 1) / 2, crosshairTexture.width * 1, crosshairTexture.height * 1), crosshairTexture);
 			}
-	}
+		}
 
 }

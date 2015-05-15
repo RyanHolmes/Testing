@@ -200,14 +200,27 @@ public class PlayerScript : MonoBehaviour {
 			if(distCheck.magnitude < 5){
 				canDrawMenu = false;
 			}
-			if (Input.GetKey (KeyCode.W)) {
+			//RYANTODO: make only columns go up down when selected, make states, change guns
+			if (Input.GetKeyDown (KeyCode.W)) {
 				//select up menu item
-			} else if (Input.GetKey (KeyCode.S)) {
+				//GameObject.Find ("menu_default").transform.position = GameObject.Find ("menu_default").transform.position  - cam.transform.up * 0.25f;
+				GameObject.Find ("menu_guns").transform.position =  GameObject.Find ("menu_guns").transform.position - cam.transform.up * 0.25f;
+				GameObject.Find ("menu_blocks").transform.position = GameObject.Find ("menu_blocks").transform.position - cam.transform.up * 0.25f;
+			} else if (Input.GetKeyDown (KeyCode.S)) {
 				//
-			} else if (Input.GetKey (KeyCode.A)) {
+				//GameObject.Find ("menu_default").transform.position = GameObject.Find ("menu_default").transform.position  + cam.transform.up * 0.25f;
+				GameObject.Find ("menu_guns").transform.position =  GameObject.Find ("menu_guns").transform.position + cam.transform.up * 0.25f;
+				GameObject.Find ("menu_blocks").transform.position = GameObject.Find ("menu_blocks").transform.position + cam.transform.up * 0.25f;
+			} else if (Input.GetKeyDown (KeyCode.A)) {
 				//
+				GameObject.Find ("menu_default").transform.position = GameObject.Find ("menu_default").transform.position  + cam.transform.right * 0.25f;
+				GameObject.Find ("menu_guns").transform.position =  GameObject.Find ("menu_guns").transform.position + cam.transform.right * 0.25f;
+				GameObject.Find ("menu_blocks").transform.position = GameObject.Find ("menu_blocks").transform.position + cam.transform.right * 0.25f;
 			} else if (Input.GetKeyDown (KeyCode.D)) {
-				leftShift = true;
+				//leftShift = true;
+				GameObject.Find ("menu_default").transform.position = GameObject.Find ("menu_default").transform.position  - cam.transform.right * 0.25f;
+				GameObject.Find ("menu_guns").transform.position =  GameObject.Find ("menu_guns").transform.position - cam.transform.right * 0.25f;
+				GameObject.Find ("menu_blocks").transform.position = GameObject.Find ("menu_blocks").transform.position - cam.transform.right * 0.25f;
 			}
 		} else {
 			GameObject.Find ("menu_default").transform.position = new Vector3(-10,-10,-10);
@@ -217,7 +230,7 @@ public class PlayerScript : MonoBehaviour {
 			canPress = true;
 			canShoot = true;
 			canDrawMenu = true;
-			leftShift = false;
+			//leftShift = false;
 		}
 	}
 

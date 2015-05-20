@@ -50,11 +50,15 @@ public class PlayerScript : MonoBehaviour {
 	public bool canShoot = true; //disable shooting when in menu mode
 	public bool leftShift = false;
 
+
+	public string currentState = "red_gun";
+
 	
 	// Use this for initialization
 	void Start () {
 		cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		canJump = true;
+
 		bulletCount = 0;
 		Cursor.visible = false; //no curser bitch!
 		canDrawMenu = true;

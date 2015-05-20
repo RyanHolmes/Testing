@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-//RYANTODO: Create all menu items (In Flash), use positions variables to draw menu
+//RYANTODO: Create all menu items (In Flash)
+//RYANTODO: Do bounds checking - can't go left if no item exists
+//RYANTODO: test add and delete functions for menu items
+//RYANTODO: Toggle modes/blocks/guns and merge with Hannes
 
 public class MenuRegistry : MonoBehaviour{
 
@@ -54,27 +57,32 @@ public class MenuRegistry : MonoBehaviour{
 	}
 
 	void Update(){
-		//RYANTODO: weapon toggle gui
 		if (Input.GetKey (KeyCode.Q)) {
 			GameObject.Find("Player").SendMessage("setFalse", "canShoot");
 			GameObject.Find("Player").SendMessage("setFalse", "canPress");
 			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = false;
 			drawMenu();
-			//RYANTODO: make only columns go up down when selected, make states, change guns
+
 			if (Input.GetKeyDown (KeyCode.W)) {
 				shiftUp();
+
 			} else if (Input.GetKeyDown (KeyCode.S)) {
 				shiftDown();
+
 			} else if (Input.GetKeyDown (KeyCode.A)) {
 				shiftLeft();
+
 			} else if (Input.GetKeyDown (KeyCode.D)) {
 				shiftRight();
 			}
+
 		} else {
 			hideMenu ();
 			GameObject.Find("Player").SendMessage("setTrue", "canShoot");
 			GameObject.Find("Player").SendMessage("setTrue", "canPress");
-			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = false;
+			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = true; //later to be replaces with "currentgun"
+			curx = 0;
+			cury = 0;
 		}
 	}
 
@@ -114,19 +122,23 @@ public class MenuRegistry : MonoBehaviour{
 
 	//draw screen
 	public void drawMenu(){
+		//NOTE: THIS IS A FUCKSHOW - ASK ME ABOUT IT
 		//draw menu items at current position
 		//draw menu items at camera position + cam's forward vector + up and right vector * item posiition, * 0.25
-		GameObject.Find ("menu_default").transform.position = cam.transform.position + cam.transform.forward;
+		GameObject.Find ("menu_default").transform.position = cam.transform.position + cam.transform.forward + (cam.transform.right * (0.25f * curx)) + (cam.transform.up * (0.25f * cury));// +
+
 		GameObject.Find ("menu_default").transform.rotation = cam.transform.rotation;
+
 		for(int i = 0; i < guns.Count; i++){
 			guns[i].transform.position = cam.transform.position + cam.transform.forward + 
-			cam.transform.right * (0.25f * guns[i].GetComponent<MenuItem>().posx) + cam.transform.up * (0.25f * guns[i].GetComponent<MenuItem>().posy);
+			cam.transform.right * (0.25f * (guns[i].GetComponent<MenuItem>().posx + curx)) + cam.transform.up * (0.25f * (guns[i].GetComponent<MenuItem>().posy + cury));
 
 			guns[i].transform.rotation = cam.transform.rotation;
 		}
+
 		for(int j = 0; j < blocks.Count; j++){
 			blocks[j].transform.position = cam.transform.position + cam.transform.forward + 
-			cam.transform.right * (0.25f * blocks[j].GetComponent<MenuItem>().posx) + cam.transform.up * (0.25f * blocks[j].GetComponent<MenuItem>().posy);
+			cam.transform.right * (0.25f * (blocks[j].GetComponent<MenuItem>().posx + curx)) + cam.transform.up * (0.25f * (blocks[j].GetComponent<MenuItem>().posy + cury));
 			blocks[j].transform.rotation = cam.transform.rotation;
 		}
 	}
@@ -162,25 +174,25 @@ public class MenuRegistry : MonoBehaviour{
 	//for movement leftward
 	public void shiftLeft() {
 		//shift left then draw menu again and update current centered position 
-		curx -= 1;
+		curx += 1;
 		this.drawMenu ();
 	}
 
 	//for movement rightward
 	public void shiftRight() {
-		curx += 1;
+		curx -= 1;
 		this.drawMenu ();
 	}
 
 	//for movement upward
 	public void shiftUp() {
-		cury += 1;
+		cury -= 1;
 		this.drawMenu ();
 	}
 
 	//for movement downward
 	public void shiftDown() {
-		cury -= 1;
+		cury += 1;
 		this.drawMenu ();
 	}
 }

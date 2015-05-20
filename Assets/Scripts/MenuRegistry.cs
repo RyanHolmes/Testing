@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 //RYANTODO: Create all menu items (In Flash), use positions variables to draw menu
 
-public class MenuRegistry{
+public class MenuRegistry : MonoBehaviour{
 
 	public Camera cam; //player camera
 
 	//list of all menu card items
-	public ArrayList blocks;
-	public ArrayList guns;
-	public GameObject menu_default;
+	public List<GameObject> blocks;
+	public List<GameObject> guns;
+	/*public GameObject menu_default;
 	public GameObject menu_delete;
 	public GameObject menu_red_gun;
 	public GameObject menu_green_gun;
-	public string currentMode = "default";
+	public GameObject menu_red_block;
+	public GameObject menu_green_block;*/
+	public string currentMode = "shoot"; //build, delete
 
 	public int lastx = 0; //last postion defaults to default
 	public int lasty = 0;
@@ -22,33 +25,57 @@ public class MenuRegistry{
 	public int cury = 0;
 
 	//constructor
-	public MenuRegistry (){
-		//Instantiate every menu item to begin with
-		//automatically add default, delete button, basic brick and basic gun
-		GameObject t = (GameObject) GameObject.Instantiate(menu_default, new Vector3 (-100, -100, -100), Quaternion.identity);
-		t.name = "menu_default";
+	void Start() {
+		blocks = new List <GameObject>();
+		guns = new List<GameObject>();
+		//set positions of menu items to begin with
+		GameObject.Find ("menu_default").SendMessage ("setx", 0);
+		GameObject.Find ("menu_default").SendMessage ("sety", 0);
 
-		GameObject s = (GameObject) GameObject.Instantiate(menu_delete, new Vector3 (-100, -100, -100), Quaternion.identity);
-		s.name = "menu_delete";
-		blocks.Add(s);
+		GameObject.Find ("menu_delete").SendMessage ("setx", 2);
+		GameObject.Find ("menu_delete").SendMessage ("sety", -1);
+		blocks.Add (GameObject.Find ("menu_delete"));
 
-		GameObject u = (GameObject) GameObject.Instantiate(menu_red_gun, new Vector3 (-100, -100, -100), Quaternion.identity);
-		u.name = "menu_red_gun";
-		guns.Add(u);
+		GameObject.Find ("menu_red_gun").SendMessage ("setx", 1);
+		GameObject.Find ("menu_red_gun").SendMessage ("sety", 0);
+		blocks.Add (GameObject.Find ("menu_red_gun"));
 
-		GameObject v = (GameObject) GameObject.Instantiate(menu_red_gun, new Vector3 (-100, -100, -100), Quaternion.identity);
-		v.name = "menu_green_gun";
-		guns.Add(v);
+		GameObject.Find ("menu_green_gun").SendMessage ("setx", 1);
+		GameObject.Find ("menu_green_gun").SendMessage ("sety", 1);
+		blocks.Add (GameObject.Find ("menu_green_gun"));
 
-		GameObject w = (GameObject) GameObject.Instantiate(menu_red_gun, new Vector3 (-100, -100, -100), Quaternion.identity);
-		w.name = "menu_green_block";
-		blocks.Add(w);
+		GameObject.Find ("menu_green_block").SendMessage ("setx", 2);
+		GameObject.Find ("menu_green_block").SendMessage ("sety", 1);
+		blocks.Add (GameObject.Find ("menu_green_block"));
 
-		GameObject x = (GameObject) GameObject.Instantiate(menu_red_gun, new Vector3 (-100, -100, -100), Quaternion.identity);
-		x.name = "menu_red_block";
-		guns.Add(x);
+		GameObject.Find ("menu_red_block").SendMessage ("setx", 2);
+		GameObject.Find ("menu_red_block").SendMessage ("sety", 0);
+		blocks.Add (GameObject.Find ("menu_red_block"));
+	}
 
-		//here instantiate all other menu items way below map
+	void Update(){
+		//RYANTODO: weapon toggle gui
+		if (Input.GetKey (KeyCode.Q)) {
+			GameObject.Find("Player").SendMessage("setFalse", "canShoot");
+			GameObject.Find("Player").SendMessage("setFalse", "canPress");
+			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = false;
+			drawMenu();
+			//RYANTODO: make only columns go up down when selected, make states, change guns
+			if (Input.GetKeyDown (KeyCode.W)) {
+				shiftUp();
+			} else if (Input.GetKeyDown (KeyCode.S)) {
+				shiftDown();
+			} else if (Input.GetKeyDown (KeyCode.A)) {
+				shiftLeft();
+			} else if (Input.GetKeyDown (KeyCode.D)) {
+				shiftRight();
+			}
+		} else {
+			hideMenu ();
+			GameObject.Find("Player").SendMessage("setTrue", "canShoot");
+			GameObject.Find("Player").SendMessage("setTrue", "canPress");
+			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = false;
+		}
 	}
 
 	//add an item to menu
@@ -57,13 +84,13 @@ public class MenuRegistry{
 
 			case "block":
 				blocks.Add(GameObject.Find (tag));
-				//instantiate menu items far below map, then just move them for convenience - may be unnecessary
-				GameObject.Instantiate(GameObject.Find (tag), new Vector3 (-100, -100, -100), Quaternion.identity);
+				//instantiate menu items far below map, then just move them for convenience - **may be unnecessary**
+				//Instantiate(GameObject.Find (tag), new Vector3 (-100, -100, -100), Quaternion.identity);
 				break;
 
 			case "gun":
 				guns.Add(GameObject.Find (tag));
-				GameObject.Instantiate(GameObject.Find (tag), new Vector3 (-100, -100, -100), Quaternion.identity);
+				//Instantiate(GameObject.Find (tag), new Vector3 (-100, -100, -100), Quaternion.identity);
 				break;
 		}
 
@@ -73,14 +100,14 @@ public class MenuRegistry{
 	public void removeMenuItem(string type, string tag){
 		switch (type) {
 			case "block":
-				blocks.Remove(GameObject.Find (tag));
-				//destroy it as well as remve from array list
-				GameObject.Destroy(GameObject.Find (tag));
+				//remove from array list and place under map
+				blocks.Remove(GameObject.Find (tag)); 
+				GameObject.Find (tag).transform.Translate(new Vector3(-100,-100,-100));
 				break;
 			
 			case "gun":
 				guns.Remove(GameObject.Find (tag));
-				GameObject.Destroy(GameObject.Find (tag));
+				GameObject.Find (tag).transform.Translate(new Vector3(-100,-100,-100));
 				break;
 		}
 	}
@@ -88,7 +115,34 @@ public class MenuRegistry{
 	//draw screen
 	public void drawMenu(){
 		//draw menu items at current position
-		//check if current position is possible then move there. If not, stay at last position
+		//draw menu items at camera position + cam's forward vector + up and right vector * item posiition, * 0.25
+		GameObject.Find ("menu_default").transform.position = cam.transform.position + cam.transform.forward;
+		GameObject.Find ("menu_default").transform.rotation = cam.transform.rotation;
+		for(int i = 0; i < guns.Count; i++){
+			guns[i].transform.position = cam.transform.position + cam.transform.forward + 
+			cam.transform.right * (0.25f * guns[i].GetComponent<MenuItem>().posx) + cam.transform.up * (0.25f * guns[i].GetComponent<MenuItem>().posy);
+
+			guns[i].transform.rotation = cam.transform.rotation;
+		}
+		for(int j = 0; j < blocks.Count; j++){
+			blocks[j].transform.position = cam.transform.position + cam.transform.forward + 
+			cam.transform.right * (0.25f * blocks[j].GetComponent<MenuItem>().posx) + cam.transform.up * (0.25f * blocks[j].GetComponent<MenuItem>().posy);
+			blocks[j].transform.rotation = cam.transform.rotation;
+		}
+	}
+
+	public void hideMenu(){
+		//move items to under screen
+		GameObject.Find ("menu_default").transform.position = new Vector3 (-100,-100,-100);
+
+		for(int i = 0; i < guns.Count; i++){
+			guns[i].transform.position =  new Vector3 (-100,-100,-100);
+		}
+
+		for(int j = 0; j < blocks.Count; j++){
+			blocks[j].transform.position = new Vector3 (-100,-100,-100);
+
+		}
 		
 	}
 

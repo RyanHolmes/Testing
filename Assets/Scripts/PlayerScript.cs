@@ -12,9 +12,9 @@ public class PlayerScript : MonoBehaviour {
 	public GameObject bullet_square;
 
 	//menu Game Objects
-	public GameObject menu_default;
+	/*public GameObject menu_default;
 	public GameObject menu_guns;
-	public GameObject menu_blocks;
+	public GameObject menu_blocks;*/
 
 	//Vectors
 	public Vector3 focusBlock;
@@ -63,12 +63,12 @@ public class PlayerScript : MonoBehaviour {
 		Cursor.visible = false; //no curser bitch!
 		canDrawMenu = true;
 		canShoot = true;
-		GameObject d = (GameObject) Instantiate(menu_default, new Vector3(-10,-10,-10), cam.transform.rotation);
+		/*GameObject d = (GameObject) Instantiate(menu_default, new Vector3(-10,-10,-10), cam.transform.rotation);
 		GameObject g = (GameObject) Instantiate(menu_guns, new Vector3(-10,-10,-10), cam.transform.rotation);
 		GameObject b = (GameObject) Instantiate(menu_blocks, new Vector3(-10,-10,-10), cam.transform.rotation);
 		d.name = "menu_default";
 		g.name = "menu_guns";
-		b.name = "menu_blocks";
+		b.name = "menu_blocks";*/
 	}
 	
 	// Update is called once per frame
@@ -105,7 +105,6 @@ public class PlayerScript : MonoBehaviour {
 		}
 		if (Input.GetKey (KeyCode.A) && canPress) {
 			//transform.Rotate (Vector3.down * Time.deltaTime * 100);
-			Debug.Log ("up11");
 			this.transform.Translate (Vector3.left * 0.1f);
 		}
 //		if (Input.GetKey (KeyCode.Mouse0) && focusBlock != lastFocusBlock) {
@@ -184,8 +183,8 @@ public class PlayerScript : MonoBehaviour {
 	
 
 
-		//RYANTODO: weapon toggle gui
-		if (Input.GetKey (KeyCode.Q)) {
+		//RYANTODO: weapon toggle gui - handled by menu registry hopefuly
+		/*if (Input.GetKey (KeyCode.Q)) {
 			canPress = false;
 			canShoot = false;
 			Vector3 distCheck = this.transform.position - GameObject.Find ("menu_default").transform.position;
@@ -235,7 +234,7 @@ public class PlayerScript : MonoBehaviour {
 			canShoot = true;
 			canDrawMenu = true;
 			//leftShift = false;
-		}
+		}*/
 	}
 
 	void OnCollisionEnter(Collision c){
@@ -250,7 +249,31 @@ public class PlayerScript : MonoBehaviour {
 		if (Time.timeScale != 0) {
 			if (crosshairTexture != null && canDrawCH)
 				GUI.DrawTexture (new Rect ((Screen.width - crosshairTexture.width * 1) / 2, (Screen.height - crosshairTexture.height * 1) / 2, crosshairTexture.width * 1, crosshairTexture.height * 1), crosshairTexture);
-			}
 		}
+	}
+
+	void setTrue (string b){
+		switch (b){
+		case "canPress" :
+			if(!canPress) canPress = true;
+			break;
+
+		case "canShoot" :
+			if(!canShoot) canShoot = true;
+			break;
+		}
+	}
+
+	void setFalse (string b){
+		switch (b){
+		case "canPress" :
+			if(canPress) canPress = false;
+			break;
+			
+		case "canShoot" :
+			if(canShoot) canShoot = false;
+			break;
+		}
+	}
 
 }

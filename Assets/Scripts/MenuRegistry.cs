@@ -83,12 +83,21 @@ public class MenuRegistry : MonoBehaviour{
 				}
 
 			} else if (Input.GetKeyDown (KeyCode.A)) {
-				if(curx == -1 || curx == -2){
+				if(curx == -1){ 
+					gcury = 0;
+					shiftLeft();
+				}
+				if(curx == -2){
+					bcury = 0;
 					shiftLeft();
 				}
 
 			} else if (Input.GetKeyDown (KeyCode.D)) {
-				if(curx == 0 || curx == -1){
+				if(curx == 0){ 
+					shiftRight();
+				}
+				else if(curx == -1){
+					gcury = 0;
 					shiftRight();
 				}
 			}

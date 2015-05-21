@@ -61,6 +61,7 @@ public class MenuRegistry : MonoBehaviour{
 		if (Input.GetKey (KeyCode.Q)) {
 			GameObject.Find("Player").SendMessage("setFalse", "canShoot");
 			GameObject.Find("Player").SendMessage("setFalse", "canPress");
+			GameObject.Find("Player").SendMessage("setFalse", "canJump");
 			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = false;
 			drawMenu();
 
@@ -106,7 +107,14 @@ public class MenuRegistry : MonoBehaviour{
 			hideMenu ();
 			GameObject.Find("Player").SendMessage("setTrue", "canShoot");
 			GameObject.Find("Player").SendMessage("setTrue", "canPress");
+			GameObject.Find("Player").SendMessage("setTrue", "canJump");
 			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = true; //later to be replaces with "currentgun"
+			if(curx == -1){
+				currentMode = "shoot";
+			}
+			else if(curx == -2){
+				currentMode = "build";
+			}
 			curx = 0;
 			bcury = 0;
 			gcury = 0;

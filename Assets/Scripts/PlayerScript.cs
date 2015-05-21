@@ -261,7 +261,12 @@ public class PlayerScript : MonoBehaviour {
 		case "canShoot" :
 			if(!canShoot) canShoot = true;
 			break;
+
+		case "canJump" :
+			if(!canJump) canJump = true;
+			break;
 		}
+
 	}
 
 	void setFalse (string b){
@@ -272,6 +277,10 @@ public class PlayerScript : MonoBehaviour {
 			
 		case "canShoot" :
 			if(canShoot) canShoot = false;
+			break;
+
+		case "canJump" :
+			if(canJump) canJump = false;
 			break;
 		}
 	}

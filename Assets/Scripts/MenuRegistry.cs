@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 //RYANTODO: Create all menu items (In Flash)
-//RYANTODO: Do bounds checking - can't go left if no item exists
+//RYANTODO: Do bounds checking - can't go left if no item exists  ---- may be done  -- may have to be other curx/y's
 //RYANTODO: test add and delete functions for menu items
 //RYANTODO: Toggle modes/blocks/guns and merge with Hannes
 
@@ -24,8 +24,10 @@ public class MenuRegistry : MonoBehaviour{
 
 	public int lastx = 0; //last postion defaults to default
 	public int lasty = 0;
-	public int curx = 0; //current centered poistion on the menu - default to begin with (0,0)
-	public int cury = 0;
+	public int gcurx = 0; //current centered poistion on the menu - default to begin with (0,0)
+	public int gcury = 0;
+	public int bcurx = 0; 
+	public int bcury = 0;
 
 	//constructor
 	void Start() {
@@ -41,11 +43,11 @@ public class MenuRegistry : MonoBehaviour{
 
 		GameObject.Find ("menu_red_gun").SendMessage ("setx", 1);
 		GameObject.Find ("menu_red_gun").SendMessage ("sety", 0);
-		blocks.Add (GameObject.Find ("menu_red_gun"));
+		guns.Add (GameObject.Find ("menu_red_gun"));
 
 		GameObject.Find ("menu_green_gun").SendMessage ("setx", 1);
 		GameObject.Find ("menu_green_gun").SendMessage ("sety", 1);
-		blocks.Add (GameObject.Find ("menu_green_gun"));
+		guns.Add (GameObject.Find ("menu_green_gun"));
 
 		GameObject.Find ("menu_green_block").SendMessage ("setx", 2);
 		GameObject.Find ("menu_green_block").SendMessage ("sety", 1);
@@ -64,16 +66,32 @@ public class MenuRegistry : MonoBehaviour{
 			drawMenu();
 
 			if (Input.GetKeyDown (KeyCode.W)) {
-				shiftUp();
+				//if its a gun item 
+				if(gcurx == -1 && (gcury * -1) < guns.Count - 1){
+					shiftUp();
+				}
+				//if its a block item
+				if(bcurx == -2 && (bcury * -1) < blocks.Count - 2){
+					shiftUp();
+				}
 
 			} else if (Input.GetKeyDown (KeyCode.S)) {
-				shiftDown();
+				if(gcurx == -1 && gcury != 0){
+					shiftDown();
+				}
+				if(bcurx == -2 && bcury != 1){
+					shiftDown();
+				}
 
 			} else if (Input.GetKeyDown (KeyCode.A)) {
-				shiftLeft();
+				if(curx == -1 || curx == -2){
+					shiftLeft();
+				}
 
 			} else if (Input.GetKeyDown (KeyCode.D)) {
-				shiftRight();
+				if(curx == 0 || curx == -1){
+					shiftRight();
+				}
 			}
 
 		} else {
@@ -92,13 +110,14 @@ public class MenuRegistry : MonoBehaviour{
 
 			case "block":
 				blocks.Add(GameObject.Find (tag));
-				//instantiate menu items far below map, then just move them for convenience - **may be unnecessary**
-				//Instantiate(GameObject.Find (tag), new Vector3 (-100, -100, -100), Quaternion.identity);
+				GameObject.Find (tag).SendMessage ("setx", 2);
+				GameObject.Find (tag).SendMessage ("sety", blocks.Count - 1);
 				break;
 
 			case "gun":
 				guns.Add(GameObject.Find (tag));
-				//Instantiate(GameObject.Find (tag), new Vector3 (-100, -100, -100), Quaternion.identity);
+				GameObject.Find (tag).SendMessage ("setx", 1);
+				GameObject.Find (tag).SendMessage ("sety", guns.Count);
 				break;
 		}
 

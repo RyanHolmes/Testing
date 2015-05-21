@@ -24,9 +24,8 @@ public class MenuRegistry : MonoBehaviour{
 
 	public int lastx = 0; //last postion defaults to default
 	public int lasty = 0;
-	public int gcurx = 0; //current centered poistion on the menu - default to begin with (0,0)
+	public int curx = 0; //current centered poistion on the menu - default to begin with (0,0)
 	public int gcury = 0;
-	public int bcurx = 0; 
 	public int bcury = 0;
 
 	//constructor
@@ -67,19 +66,19 @@ public class MenuRegistry : MonoBehaviour{
 
 			if (Input.GetKeyDown (KeyCode.W)) {
 				//if its a gun item 
-				if(gcurx == -1 && (gcury * -1) < guns.Count - 1){
+				if(curx == -1 && (gcury * -1) < guns.Count - 1){
 					shiftUp();
 				}
 				//if its a block item
-				if(bcurx == -2 && (bcury * -1) < blocks.Count - 2){
+				if(curx == -2 && (bcury * -1) < blocks.Count - 2){
 					shiftUp();
 				}
 
 			} else if (Input.GetKeyDown (KeyCode.S)) {
-				if(gcurx == -1 && gcury != 0){
+				if(curx == -1 && gcury != 0){
 					shiftDown();
 				}
-				if(bcurx == -2 && bcury != 1){
+				if(curx == -2 && bcury != 1){
 					shiftDown();
 				}
 
@@ -100,7 +99,8 @@ public class MenuRegistry : MonoBehaviour{
 			GameObject.Find("Player").SendMessage("setTrue", "canPress");
 			GameObject.Find("gun_basic").GetComponent<MeshRenderer>().enabled = true; //later to be replaces with "currentgun"
 			curx = 0;
-			cury = 0;
+			bcury = 0;
+			gcury = 0;
 		}
 	}
 
@@ -144,20 +144,20 @@ public class MenuRegistry : MonoBehaviour{
 		//NOTE: THIS IS A FUCKSHOW - ASK ME ABOUT IT
 		//draw menu items at current position
 		//draw menu items at camera position + cam's forward vector + up and right vector * item posiition, * 0.25
-		GameObject.Find ("menu_default").transform.position = cam.transform.position + cam.transform.forward + (cam.transform.right * (0.25f * curx)) + (cam.transform.up * (0.25f * cury));// +
+		GameObject.Find ("menu_default").transform.position = cam.transform.position + cam.transform.forward + (cam.transform.right * (0.25f * curx)) + (cam.transform.up * (0.25f * 0));// +
 
 		GameObject.Find ("menu_default").transform.rotation = cam.transform.rotation;
 
 		for(int i = 0; i < guns.Count; i++){
 			guns[i].transform.position = cam.transform.position + cam.transform.forward + 
-			cam.transform.right * (0.25f * (guns[i].GetComponent<MenuItem>().posx + curx)) + cam.transform.up * (0.25f * (guns[i].GetComponent<MenuItem>().posy + cury));
+			cam.transform.right * (0.25f * (guns[i].GetComponent<MenuItem>().posx + curx)) + cam.transform.up * (0.25f * (guns[i].GetComponent<MenuItem>().posy + gcury));
 
 			guns[i].transform.rotation = cam.transform.rotation;
 		}
 
 		for(int j = 0; j < blocks.Count; j++){
 			blocks[j].transform.position = cam.transform.position + cam.transform.forward + 
-			cam.transform.right * (0.25f * (blocks[j].GetComponent<MenuItem>().posx + curx)) + cam.transform.up * (0.25f * (blocks[j].GetComponent<MenuItem>().posy + cury));
+			cam.transform.right * (0.25f * (blocks[j].GetComponent<MenuItem>().posx + curx)) + cam.transform.up * (0.25f * (blocks[j].GetComponent<MenuItem>().posy + bcury));
 			blocks[j].transform.rotation = cam.transform.rotation;
 		}
 	}
@@ -205,13 +205,23 @@ public class MenuRegistry : MonoBehaviour{
 
 	//for movement upward
 	public void shiftUp() {
-		cury -= 1;
+		if(curx == -1){
+			gcury -= 1;
+		}
+		if(curx == -2){
+			bcury -= 1;
+		}
 		this.drawMenu ();
 	}
 
 	//for movement downward
 	public void shiftDown() {
-		cury += 1;
+		if(curx == -1){
+			gcury += 1;
+		}
+		if(curx == -2){
+			bcury += 1;
+		}
 		this.drawMenu ();
 	}
 }

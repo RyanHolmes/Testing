@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 //RYANTODO: Create all menu items (In Flash)
-//RYANTODO: Do bounds checking - can't go left if no item exists  ---- may be done  -- may have to be other curx/y's
 //RYANTODO: test add and delete functions for menu items
-//RYANTODO: Toggle modes/blocks/guns and merge with Hannes
+//RYANTODO: merge with Hannes
 
 public class MenuRegistry : MonoBehaviour{
 
@@ -14,19 +13,13 @@ public class MenuRegistry : MonoBehaviour{
 	//list of all menu card items
 	public List<GameObject> blocks;
 	public List<GameObject> guns;
-	/*public GameObject menu_default;
-	public GameObject menu_delete;
-	public GameObject menu_red_gun;
-	public GameObject menu_green_gun;
-	public GameObject menu_red_block;
-	public GameObject menu_green_block;*/
 	public string currentMode = "shoot"; //build, delete
 
 	public int lastx = 0; //last postion defaults to default
 	public int lasty = 0;
-	public int curx = 0; //current centered poistion on the menu - default to begin with (0,0)
-	public int gcury = 0;
-	public int bcury = 0;
+	public int curx = 0; //current x position of menu -> -1 is gun and -2 is block, 0 is default
+	public int gcury = 0;//y position of guns 
+	public int bcury = 0;//y position of blocks
 
 	//constructor
 	void Start() {

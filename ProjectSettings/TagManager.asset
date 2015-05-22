@@ -10,6 +10,12 @@ TagManager:
   - marker_front
   - marker_back
   - bullet_basic
+  - menu_default
+  - menu_delete
+  - menu_red_gun
+  - menu_green_gun
+  - menu_red_block
+  - menu_green_block
   layers:
   - Default
   - TransparentFX

@@ -466,7 +466,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 2136255551}
   - 114: {fileID: 2136255550}
-  - 114: {fileID: 2136255552}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: main
@@ -499,29 +498,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
---- !u!114 &2136255552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2136255549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b114beaf91b274e8db92dcc977d6c8a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cam: {fileID: 1614821295}
-  menu_default: {fileID: 119380, guid: 2a138c6f7627e446ca0b9db26a109c4d, type: 2}
-  menu_delete: {fileID: 198942, guid: 4b2bb11e6b2184d80996499a9b2fd0e6, type: 2}
-  menu_red_gun: {fileID: 116710, guid: b3cda7703ed7949a0a36b3f31d7debe8, type: 2}
-  menu_green_gun: {fileID: 113574, guid: 04081e547bb89493b8c62d9d62209c7b, type: 2}
-  menu_red_block: {fileID: 162716, guid: c6a224bc0fcdd4d8e9faf164b14abcef, type: 2}
-  menu_green_block: {fileID: 133168, guid: efe21a8e64de34746954144c1627d215, type: 2}
-  currentMode: default
-  lastx: 0
-  lasty: 0
-  curx: 0
-  cury: 0
 --- !u!1 &2146403448
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,9 +511,10 @@ GameObject:
   - 23: {fileID: 2146403449}
   - 114: {fileID: 2146403453}
   - 54: {fileID: 2146403454}
+  - 114: {fileID: 2146403455}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -616,9 +593,6 @@ MonoBehaviour:
   cube: {fileID: 137186, guid: 6cc68770d39f9794293e750fb904d3a0, type: 2}
   bullet_circle: {fileID: 181222, guid: 66f3aa668378e4705a2f0d19937a0215, type: 2}
   bullet_square: {fileID: 0}
-  menu_default: {fileID: 119380, guid: 2a138c6f7627e446ca0b9db26a109c4d, type: 2}
-  menu_guns: {fileID: 135730, guid: fc7c2db16f7cc41c6b26aed0d2377418, type: 2}
-  menu_blocks: {fileID: 188438, guid: bacd3aa8adc7f4df48ed22ceac33f0ec, type: 2}
   focusBlock: {x: 0, y: 0, z: 0}
   speed: .0500000007
   bulletCount: 0
@@ -653,3 +627,29 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &2146403455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2146403448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b114beaf91b274e8db92dcc977d6c8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 1614821295}
+  menu_default: {fileID: 119380, guid: 2a138c6f7627e446ca0b9db26a109c4d, type: 2}
+  menu_delete: {fileID: 198942, guid: 4b2bb11e6b2184d80996499a9b2fd0e6, type: 2}
+  menu_red_gun: {fileID: 150426, guid: 4b9ffd4685297445fbb73f7828440cb4, type: 2}
+  menu_green_gun: {fileID: 113134, guid: 71641b8643ddf489b9e9835008cb72e7, type: 2}
+  menu_red_block: {fileID: 170460, guid: 3f7a8d3702aef443cb533f6ce2d28902, type: 2}
+  menu_green_block: {fileID: 165730, guid: f8ec44ab6bcb94b94b3fd1dce041b10a, type: 2}
+  blocks: []
+  guns: []
+  currentMode: default
+  lastx: 0
+  lasty: 0
+  curx: 0
+  gcury: 0
+  bcury: 0

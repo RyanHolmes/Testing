@@ -10,6 +10,14 @@ public class MenuRegistry : MonoBehaviour{
 
 	public Camera cam; //player camera
 
+	public GameObject menu_default;
+	public GameObject menu_delete;
+	public GameObject menu_red_gun;
+	public GameObject menu_green_gun;
+	public GameObject menu_red_block;
+	public GameObject menu_green_block;
+	public GameObject md;
+
 	//list of all menu card items
 	public List<GameObject> blocks;
 	public List<GameObject> guns;
@@ -25,29 +33,43 @@ public class MenuRegistry : MonoBehaviour{
 	void Start() {
 		blocks = new List <GameObject>();
 		guns = new List<GameObject>();
+
 		//set positions of menu items to begin with
-		GameObject.Find ("menu_default").SendMessage ("setx", 0);
-		GameObject.Find ("menu_default").SendMessage ("sety", 0);
+		md = (GameObject)Instantiate (menu_default, new Vector3(-100,-100,-100), Quaternion.identity);
+		md.tag = "menu_default";
+		md.GetComponent<MenuItem>().setx(0);
+		md.GetComponent<MenuItem>().sety(0);
 
-		GameObject.Find ("menu_delete").SendMessage ("setx", 2);
-		GameObject.Find ("menu_delete").SendMessage ("sety", -1);
-		blocks.Add (GameObject.Find ("menu_delete"));
+		GameObject h = (GameObject)Instantiate (menu_delete, new Vector3(-100,-100,-100), Quaternion.identity);
+		h.tag = "menu_delete";
+		h.GetComponent<MenuItem>().setx(2);
+		h.GetComponent<MenuItem>().sety(-1);
+		blocks.Add (h);
 
-		GameObject.Find ("menu_red_gun").SendMessage ("setx", 1);
-		GameObject.Find ("menu_red_gun").SendMessage ("sety", 0);
-		guns.Add (GameObject.Find ("menu_red_gun"));
+		GameObject i = (GameObject)Instantiate (menu_red_gun, new Vector3(-100,-100,-100), Quaternion.identity);
+		i.tag = "menu_red_gun";
+		i.GetComponent<MenuItem>().setx(1);
+		i.GetComponent<MenuItem>().sety(0);
+		guns.Add (i);
 
-		GameObject.Find ("menu_green_gun").SendMessage ("setx", 1);
-		GameObject.Find ("menu_green_gun").SendMessage ("sety", 1);
-		guns.Add (GameObject.Find ("menu_green_gun"));
+		GameObject j = (GameObject)Instantiate (menu_green_gun, new Vector3(-100,-100,-100), Quaternion.identity);
+		j.tag = "menu_green_gun";
+		j.GetComponent<MenuItem>().setx(1);
+		j.GetComponent<MenuItem>().sety(1);
+		guns.Add (j);
 
-		GameObject.Find ("menu_green_block").SendMessage ("setx", 2);
-		GameObject.Find ("menu_green_block").SendMessage ("sety", 1);
-		blocks.Add (GameObject.Find ("menu_green_block"));
+		GameObject k = (GameObject)Instantiate (menu_red_block, new Vector3(-100,-100,-100), Quaternion.identity);
+		k.tag = "menu_red_block";
+		k.GetComponent<MenuItem>().setx(2);
+		k.GetComponent<MenuItem>().sety(0);
+		blocks.Add (k);
 
-		GameObject.Find ("menu_red_block").SendMessage ("setx", 2);
-		GameObject.Find ("menu_red_block").SendMessage ("sety", 0);
-		blocks.Add (GameObject.Find ("menu_red_block"));
+		GameObject l = (GameObject)Instantiate (menu_green_block, new Vector3(-100,-100,-100), Quaternion.identity);
+		l.tag = "menu_green_block";
+		l.GetComponent<MenuItem>().setx(2);
+		l.GetComponent<MenuItem>().sety(1);
+		blocks.Add (l);
+
 	}
 
 	void Update(){
@@ -62,6 +84,7 @@ public class MenuRegistry : MonoBehaviour{
 				//if its a gun item 
 				if(curx == -1 && (gcury * -1) < guns.Count - 1){
 					shiftUp();
+
 				}
 				//if its a block item
 				if(curx == -2 && (bcury * -1) < blocks.Count - 2){
@@ -106,7 +129,12 @@ public class MenuRegistry : MonoBehaviour{
 				currentMode = "shoot";
 			}
 			else if(curx == -2){
-				currentMode = "build";
+				if(bcury == 1){
+					currentMode = "delete";
+				}
+				else{
+					currentMode = "build";
+				}
 			}
 			curx = 0;
 			bcury = 0;
@@ -114,49 +142,17 @@ public class MenuRegistry : MonoBehaviour{
 		}
 	}
 
-	//add an item to menu
-	public void addMenuItem (string type, string tag){
-		switch (type) {
 
-			case "block":
-				blocks.Add(GameObject.Find (tag));
-				GameObject.Find (tag).SendMessage ("setx", 2);
-				GameObject.Find (tag).SendMessage ("sety", blocks.Count - 1);
-				break;
-
-			case "gun":
-				guns.Add(GameObject.Find (tag));
-				GameObject.Find (tag).SendMessage ("setx", 1);
-				GameObject.Find (tag).SendMessage ("sety", guns.Count);
-				break;
-		}
-
-	}
-
-	//remove item
-	public void removeMenuItem(string type, string tag){
-		switch (type) {
-			case "block":
-				//remove from array list and place under map
-				blocks.Remove(GameObject.Find (tag)); 
-				GameObject.Find (tag).transform.Translate(new Vector3(-100,-100,-100));
-				break;
-			
-			case "gun":
-				guns.Remove(GameObject.Find (tag));
-				GameObject.Find (tag).transform.Translate(new Vector3(-100,-100,-100));
-				break;
-		}
-	}
 
 	//draw screen
 	public void drawMenu(){
 		//NOTE: THIS IS A FUCKSHOW - ASK ME ABOUT IT
 		//draw menu items at current position
 		//draw menu items at camera position + cam's forward vector + up and right vector * item posiition, * 0.25
-		GameObject.Find ("menu_default").transform.position = cam.transform.position + cam.transform.forward + (cam.transform.right * (0.25f * curx)) + (cam.transform.up * (0.25f * 0));// +
+		//md.GetComponent<MeshRenderer> ().enabled = true;
 
-		GameObject.Find ("menu_default").transform.rotation = cam.transform.rotation;
+		md.transform.position = cam.transform.position + cam.transform.forward + (cam.transform.right * (0.25f * curx)) + (cam.transform.up * (0.25f * 0));// +
+		md.transform.rotation = cam.transform.rotation;
 
 		for(int i = 0; i < guns.Count; i++){
 			guns[i].transform.position = cam.transform.position + cam.transform.forward + 
@@ -174,7 +170,8 @@ public class MenuRegistry : MonoBehaviour{
 
 	public void hideMenu(){
 		//move items to under screen
-		GameObject.Find ("menu_default").transform.position = new Vector3 (-100,-100,-100);
+		md.transform.position = new Vector3 (-100,-100,-100);
+		//md.GetComponent<MeshRenderer> ().enabled = false;
 
 		for(int i = 0; i < guns.Count; i++){
 			guns[i].transform.position =  new Vector3 (-100,-100,-100);
@@ -233,5 +230,40 @@ public class MenuRegistry : MonoBehaviour{
 			bcury += 1;
 		}
 		this.drawMenu ();
+	}
+
+	//add an item to menu
+	public void addMenuItem (string type, string tag){
+		switch (type) {
+			
+		case "block":
+			blocks.Add(GameObject.Find (tag));
+			GameObject.Find (tag).SendMessage ("setx", 2);
+			GameObject.Find (tag).SendMessage ("sety", blocks.Count - 1);
+			break;
+			
+		case "gun":
+			guns.Add(GameObject.Find (tag));
+			GameObject.Find (tag).SendMessage ("setx", 1);
+			GameObject.Find (tag).SendMessage ("sety", guns.Count);
+			break;
+		}
+		
+	}
+	
+	//remove item
+	public void removeMenuItem(string type, string tag){
+		switch (type) {
+		case "block":
+			//remove from array list and place under map
+			blocks.Remove(GameObject.Find (tag)); 
+			GameObject.Find (tag).transform.Translate(new Vector3(-100,-100,-100));
+			break;
+			
+		case "gun":
+			guns.Remove(GameObject.Find (tag));
+			GameObject.Find (tag).transform.Translate(new Vector3(-100,-100,-100));
+			break;
+		}
 	}
 }
